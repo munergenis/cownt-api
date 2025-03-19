@@ -1,5 +1,5 @@
 import express from "express";
-import cowRouter from "./cows/router";
+import cowRouter from "./cow/router";
 
 const app = express();
 

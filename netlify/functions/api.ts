@@ -1,7 +1,7 @@
 import ServerlessHttp from "serverless-http";
 import app from "../../server/app";
 import { connectDB } from "../../server/db/config";
-import { HandlerContext, HandlerEvent } from "@netlify/functions";
+import type { HandlerContext, HandlerEvent } from "@netlify/functions";
 
 const dbConnection = connectDB();
 

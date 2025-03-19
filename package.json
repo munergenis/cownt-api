@@ -2,6 +2,7 @@
   "name": "cownt-app",
   "version": "0.0.1",
   "main": "app.ts",
+  "type": "module",
   "module": "esnext",
   "scripts": {
     "dev": "tsx watch server/server.ts",

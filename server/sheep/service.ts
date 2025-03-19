@@ -1,47 +1,49 @@
-import CowModel, { Cow } from "./model";
+import SheepModel, { Sheep } from "./model";
 import {
-  CreateCowSchema,
-  createCowSchema,
-  UpdateCowSchema,
+  CreateSheepSchema,
+  createSheepSchema,
+  UpdateSheepSchema,
 } from "./validation/schemas";
 
 const service = {
-  async getAllCows() {
-    const allCows: Cow[] = await CowModel.find({});
-    return allCows;
+  async getAllSheeps() {
+    const allSheeps: Sheep[] = await SheepModel.find({});
+    return allSheeps;
   },
 
-  async getCowById(cowId: string) {
-    const cow: Cow | null = await CowModel.findById(cowId);
-    return cow;
+  async getSheepById(sheepId: string) {
+    const sheep: Sheep | null = await SheepModel.findById(sheepId);
+    return sheep;
   },
 
-  async createCow(cowData: CreateCowSchema) {
+  async createSheep(sheepData: CreateSheepSchema) {
     // TODO: Validar que la vaca amb aquest codi no existeixi
-    // const cowExists: Cow | null = await CowModel.findOne({
-    //   CODI_X_O_PROPIETAT: cowData.CODI_X_O_PROPIETAT,
+    // const sheepExists: Sheep | null = await SheepModel.findOne({
+    //   CODI_X_O_PROPIETAT: sheepData.CODI_X_O_PROPIETAT,
     // });
-    // if (cowExists) {
+    // if (sheepExists) {
     //   return null;
     // }
-    const newCowDocument: Cow = await CowModel.create(cowData);
-    return newCowDocument;
+    const newSheepDocument: Sheep = await SheepModel.create(sheepData);
+    return newSheepDocument;
   },
 
-  async deleteCow(cowId: string) {
-    const deletedCow: Cow | null = await CowModel.findByIdAndDelete(cowId);
-    return deletedCow;
+  async deleteSheep(sheepId: string) {
+    const deletedSheep: Sheep | null = await SheepModel.findByIdAndDelete(
+      sheepId
+    );
+    return deletedSheep;
   },
 
-  async updateCow(cowId: string, cowData: UpdateCowSchema) {
-    const updatedCow: Cow | null = await CowModel.findByIdAndUpdate(
-      cowId,
-      cowData,
+  async updateSheep(sheepId: string, sheepData: UpdateSheepSchema) {
+    const updatedSheep: Sheep | null = await SheepModel.findByIdAndUpdate(
+      sheepId,
+      sheepData,
       {
         returnDocument: "after",
       }
     );
-    return updatedCow;
+    return updatedSheep;
   },
 };
 

@@ -1,11 +1,11 @@
 import { model, Schema, Document } from "mongoose";
 
-export interface Cow extends Document {
+export interface Sheep extends Document {
   name: string;
   age: number;
 }
 
-const cowSchema = new Schema<Cow>(
+const sheepSchema = new Schema<Sheep>(
   {
     name: { type: String, required: true },
     age: { type: Number, required: true },
@@ -22,6 +22,6 @@ const cowSchema = new Schema<Cow>(
   }
 );
 
-const CowModel = model<Cow>("Cow", cowSchema);
+const SheepModel = model<Sheep>("Sheep", sheepSchema);
 
-export default CowModel;
+export default SheepModel;

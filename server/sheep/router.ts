@@ -1,13 +1,13 @@
 import { Router } from "express";
-import cowController from "./controller";
+import sheepController from "./controller";
 
 const router = Router();
 
-router.get("/", cowController.getAllCows);
-router.get("/:cowId", cowController.getCowById);
+router.get("/", sheepController.getAllSheeps);
+router.get("/:sheepId", sheepController.getSheepById);
 
-router.post("/", cowController.createCow);
-router.patch("/:cowId", cowController.updateCow);
-router.delete("/:cowId", cowController.deleteCow);
+router.post("/", sheepController.createSheep);
+router.patch("/:sheepId", sheepController.updateSheep);
+router.delete("/:sheepId", sheepController.deleteSheep);
 
 export default router;

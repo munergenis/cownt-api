@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
-import cowService from "./service";
+import sheepService from "./service";
 import {
-  CreateCowSchema,
-  createCowSchema,
-  UpdateCowSchema,
-  updateCowSchema,
+  CreateSheepSchema,
+  createSheepSchema,
+  UpdateSheepSchema,
+  updateSheepSchema,
 } from "./validation/schemas";
 import { ZodError } from "zod";
-import { Cow } from "./model";
+import { Sheep } from "./model";
 
 const controller = {
-  async getAllCows(req: Request, res: Response) {
+  async getAllSheeps(req: Request, res: Response) {
     try {
-      const allCows: Cow[] = await cowService.getAllCows();
-      res.status(200).json(allCows);
+      const allSheeps: Sheep[] = await sheepService.getAllSheeps();
+      res.status(200).json(allSheeps);
       return;
     } catch (error) {
       console.error(error);
@@ -22,19 +22,19 @@ const controller = {
     }
   },
 
-  async getCowById(req: Request, res: Response) {
-    const { cowId } = req.params;
-    let cow: Cow | null;
+  async getSheepById(req: Request, res: Response) {
+    const { sheepId } = req.params;
+    let sheep: Sheep | null;
 
     try {
-      cow = await cowService.getCowById(cowId);
+      sheep = await sheepService.getSheepById(sheepId);
 
-      if (!cow) {
-        res.status(404).json({ message: `Cow with id ${cowId} not found` });
+      if (!sheep) {
+        res.status(404).json({ message: `Sheep with id ${sheepId} not found` });
         return;
       }
 
-      res.status(200).json(cow);
+      res.status(200).json(sheep);
       return;
     } catch (error) {
       console.error(error);
@@ -43,13 +43,13 @@ const controller = {
     }
   },
 
-  async createCow(req: Request, res: Response) {
-    let cowData: CreateCowSchema;
-    let newCow: Cow | null;
+  async createSheep(req: Request, res: Response) {
+    let sheepData: CreateSheepSchema;
+    let newSheep: Sheep | null;
 
     // validate payload
     try {
-      cowData = createCowSchema.parse(req.body);
+      sheepData = createSheepSchema.parse(req.body);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json(error.issues);
@@ -61,14 +61,14 @@ const controller = {
     }
 
     try {
-      newCow = await cowService.createCow(cowData);
+      newSheep = await sheepService.createSheep(sheepData);
 
-      if (!newCow) {
-        res.status(409).json({ message: "Cow already exists" });
+      if (!newSheep) {
+        res.status(409).json({ message: "Sheep already exists" });
         return;
       }
 
-      res.status(201).json(newCow);
+      res.status(201).json(newSheep);
       return;
     } catch (error) {
       console.error(error);
@@ -77,21 +77,21 @@ const controller = {
     }
   },
 
-  async deleteCow(req: Request, res: Response) {
-    const { cowId } = req.params;
+  async deleteSheep(req: Request, res: Response) {
+    const { sheepId } = req.params;
     try {
-      const deletedCow = await cowService.deleteCow(cowId);
+      const deletedSheep = await sheepService.deleteSheep(sheepId);
 
-      if (!deletedCow) {
+      if (!deletedSheep) {
         res
           .status(404)
-          .json({ message: `Cow with id ${cowId} does not exist` });
+          .json({ message: `Sheep with id ${sheepId} does not exist` });
         return;
       }
 
       res
         .status(200)
-        .json({ message: `Cow with id ${cowId} deleted successfully` });
+        .json({ message: `Sheep with id ${sheepId} deleted successfully` });
       return;
     } catch (error) {
       console.error(error);
@@ -100,13 +100,13 @@ const controller = {
     }
   },
 
-  async updateCow(req: Request, res: Response) {
-    const { cowId } = req.params;
-    let cowData: UpdateCowSchema;
-    let updatedCow: Cow | null;
+  async updateSheep(req: Request, res: Response) {
+    const { sheepId } = req.params;
+    let sheepData: UpdateSheepSchema;
+    let updatedSheep: Sheep | null;
 
     try {
-      cowData = updateCowSchema.parse(req.body);
+      sheepData = updateSheepSchema.parse(req.body);
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json(error.issues);
@@ -118,16 +118,16 @@ const controller = {
     }
 
     try {
-      updatedCow = await cowService.updateCow(cowId, cowData);
+      updatedSheep = await sheepService.updateSheep(sheepId, sheepData);
 
-      if (!updatedCow) {
+      if (!updatedSheep) {
         res
           .status(404)
-          .json({ message: `Cow with id ${cowId} does not exist` });
+          .json({ message: `Sheep with id ${sheepId} does not exist` });
         return;
       }
 
-      res.status(200).json(updatedCow);
+      res.status(200).json(updatedSheep);
       return;
     } catch (error) {
       console.error(error);

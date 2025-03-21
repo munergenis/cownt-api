@@ -1,5 +1,5 @@
 import mongoose, { mongo } from "mongoose";
-import { COW_SHORT_CODE_LAST_CHARS_NUM } from "../consts";
+import { COW_SHORT_CODE_LAST_CHARS_NUM, ORIGIN } from "../consts";
 import CowModel, {
   Cow,
   CowBreed,
@@ -24,7 +24,13 @@ const service = {
   },
 
   async getCowById(cowId: string) {
-    const cow: Cow | null = await CowModel.findById(cowId);
+    const cow: Cow | null = await CowModel.findById(cowId).populate([
+      "breed",
+      "characteristics",
+      "father",
+      "mother",
+      "children",
+    ]);
     return cow;
   },
 
@@ -32,10 +38,46 @@ const service = {
     const { longCode } = cowData;
     const shortCode = longCode.slice(-COW_SHORT_CODE_LAST_CHARS_NUM);
 
-    const newcow = { ...cowData, shortCode };
+    const newCow = { ...cowData, shortCode };
+    let createdCow: Cow;
 
-    const newCowDocument: Cow = await CowModel.create(newcow);
-    return newCowDocument;
+    /**
+     * Animal could be bought or born
+     * - if animal is born, mother must be passed
+     * - if animal is bought mother must not be passed
+     *
+     * if mother is passed, the child (current animal) must be added to it's children arrays
+     */
+    if (!newCow.mother && newCow.origin === ORIGIN.BOUGHT) {
+      // if none is passed the animal we only create the animal document
+      createdCow = await CowModel.create(newCow);
+    } else if (newCow.mother && newCow.origin === ORIGIN.BORN) {
+      // both are passed so must update father and mother documents
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      try {
+        createdCow = await CowModel.create([newCow], { session })[0];
+
+        // updating mother births
+        await CowModel.updateMany(
+          { _id: newCow.mother },
+          { $push: { children: createdCow._id } }
+        ).session(session);
+        // TODO: update mother birthAverage
+
+        await session.commitTransaction();
+        await session.endSession();
+      } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        throw error;
+      }
+    } else {
+      throw new Error("Internal server error");
+    }
+
+    return createdCow;
   },
 
   async deleteCow(cowId: string) {
@@ -43,7 +85,9 @@ const service = {
     session.startTransaction();
 
     try {
-      const deletedCow: Cow | null = await CowModel.findByIdAndDelete(cowId);
+      const deletedCow: Cow | null = await CowModel.findByIdAndDelete(
+        cowId
+      ).session(session);
 
       if (!deletedCow) {
         await session.abortTransaction();
@@ -51,13 +95,23 @@ const service = {
         return null;
       }
 
-      // actualitzar vaques
-      await CowModel.updateMany({ father: cowId }, { $set: { father: null } });
-      await CowModel.updateMany({ mother: cowId }, { $set: { mother: null } });
+      if (!deletedCow.mother) {
+        await session.commitTransaction();
+        await session.endSession();
+        return deletedCow;
+      }
+
+      // set mother prop to null on all children
+      await CowModel.updateMany(
+        { mother: cowId },
+        { $set: { mother: null } }
+      ).session(session);
+      // delete from children array of the mother
       await CowModel.updateMany(
         { children: cowId },
         { $pull: { children: cowId } }
-      );
+      ).session(session);
+      // TODO: update birthAverage from mother (mothers?)
 
       await session.commitTransaction();
       await session.endSession();
@@ -70,15 +124,9 @@ const service = {
   },
 
   async updateCow(cowId: string, cowData: UpdateCowSchema) {
-    const shortCode = cowData.longCode?.slice(-COW_SHORT_CODE_LAST_CHARS_NUM);
-    const updatedCowData = {
-      ...cowData,
-      ...(shortCode && { shortCode }),
-    };
-
     const updatedCow: Cow | null = await CowModel.findByIdAndUpdate(
       cowId,
-      updatedCowData,
+      cowData,
       { returnDocument: "after" }
     );
     return updatedCow;
@@ -156,7 +204,9 @@ const service = {
 
     try {
       const deletedCharacteristic: CowCharacteristic | null =
-        await CowCharacteristicModel.findByIdAndDelete(characteristicId);
+        await CowCharacteristicModel.findByIdAndDelete(
+          characteristicId
+        ).session(session);
       if (!deletedCharacteristic) {
         await session.abortTransaction();
         await session.endSession();

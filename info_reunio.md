@@ -1,60 +1,42 @@
-intervals de parts de cada vaca
+<!-- vaques sense parts els ultims X mesos:
 
-vacaData {
-longCode: string,\*
-shortCode: string,
-breed: string, (enum) [Xarolesa, Llimosina, Salers, Creuada] (nova coleccio)
-sex: string, (enum) [M, F]
-birthDate: string | null,
-weight: string,
-origin: string, (enum) [bought, born]
-cost: num | null,
-sale: num | null,
-absence: string | null, (enum) [dead, sold]
-characteristics: string[], (enum) [mal caracter, mala llet, berguer gros, coixera] (nova coleccio)
+- sex === 'f'
+- !absence
+- startReproductionDate !== null
+- startReproductionDate to Today > X [opcional amb flag a front] (Incloure [animal] que fa menys de [X] mesos que té edat per reproduir-se) => no inclurà aquest filtre
+- (X month before today < births with dates < Today) === 0 (es a dir, amb 0 births entre X mesos abans i avui) -->
 
-father: ref | null,
-mother: ref | null,
-children: ref[]
+Al crear una vaca, diferenciar entre vaca comprada i vaca nascuda!!!!
 
-}
+- Vaca comprada no te id de mare ni pare
+- Vaca nascuda es obligatori posar id mare i pare
 
-vacaData(reunio) {
-x-codiLlarg: (son diferents, no tots iguals)
-x-codiCurt (ultims 4 numeros codiLlarg) (poden repetirse. si es repeteixen el llarg es diferent)
-x-raça:
-x-sexe:
-x-dataNaixament:
-x-caracteristiques: [mal caracter, mala llet, berguer gros (tetes), coixeres]
-births: [{data, codiLlarg, toro (opcional)}, ...]
-x-present {
-true/false
-motiu: mort, venta, etc
-}
-}
+1Vaca:
 
-vacaNoQuedada {
-x-pes: per edat (es pesa el dia que es ven)
-}
+- Vaca sense edat reproductiva:
+  -- Sense edat
+  -- No mitjana
+- Vaca amb edat reproductiva i 0 parts:
+  -- Novella des de X mesos
+  -- No mitjana
+- Vaca amb edat reproductiva i 1 part:
+  -- Ultim part fa X mesos
+  -- No mitjana
+- Vaca amb edat reproductiva i 2+ parts:
+  -- Ultim part fa X mesos
+  -- SI mitjana parts
 
-vacaActions: {
-crear (neix o compra)
-editar
+Vaques:
+
+- mitjana parts ramat històric
+- mitjana parts ramat per any
+
+DADES IMPORTANTS!
+longCode: (son diferents, no tots iguals)
+shortCode: (vaques: 4 últimes, ovelles: 5 ultimes xifres | del codi llarg) (poden repetirse. si es repeteixen el llarg es diferent)
+
 registrarPart (aquesta accio es un POST a cows on ja es passa amb la info de la nova vaca, l'id de la vacaMare i la id del pare (s'ha de seleccionar d'un llistat))
 
-}
-
-avis de vaca no pareix fa X mesos (x editable)
-
-accio per determinar que ja tenen edat de reproduirse amb el toro
-
-ordre de view cows
+Sort cows:
 per codi curt
 per dataNaixament
-
-ovellaData {
-igual que vaca
-codiCurt (ultims 5 numeros codiLlarg) (poden repetirse)
-}
-
-que fem amb toro

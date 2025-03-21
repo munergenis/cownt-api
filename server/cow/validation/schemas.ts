@@ -5,47 +5,81 @@ import { Types } from "mongoose";
 
 // Cow Create/Update Schemas
 export type CreateCowSchema = z.infer<typeof createCowSchema>;
-export const createCowSchema = z.object({
-  longCode: z
-    .string()
-    .min(10)
-    .max(16)
-    .refine(validateLongCode, "longCode already exists"),
-  breed: z
-    .string()
-    .refine(
-      async (id) => await checkBreedExistsById(id, true),
-      "Breed does not exist"
-    ),
-  sex: z.nativeEnum(SEX),
-  birthDate: z
-    .string()
-    .optional()
-    .refine(
-      validateBirthDate,
-      "birthDate must be a valid date timestamp in milliseconds"
-    ),
-  weight: z.string().min(1).max(10).optional(),
-  origin: z.nativeEnum(ORIGIN),
-  buyPrice: z.number().nonnegative().int().optional(),
-  salePrice: z.number().nonnegative().int().optional(),
-  absence: z.nativeEnum(ABSENCE).nullable(),
-  characteristics: z.array(
-    z
+export const createCowSchema = z
+  .object({
+    longCode: z
+      .string()
+      .min(10)
+      .max(16)
+      .refine(validateLongCode, "longCode already exists"),
+    breed: z
       .string()
       .refine(
-        async (id) => await checkCharacteristicExistsById(id, true),
-        "characteristic does not exist"
-      )
-  ),
-  father: z.string().optional().refine(validateCowExists, "Cow does not exist"),
-  mother: z.string().optional().refine(validateCowExists, "Cow does not exist"),
-  children: z
-    .array(z.string().refine(validateCowExists, "Cow does not exist"))
+        async (id) => await checkBreedExistsById(id, true),
+        "Breed does not exist"
+      ),
+    sex: z.nativeEnum(SEX),
+    birthDate: z
+      .string()
+      .optional()
+      .refine(
+        validateDate,
+        "birthDate must be a valid date timestamp in milliseconds"
+      ),
+    weight: z.string().min(1).max(10).optional(),
+    origin: z.nativeEnum(ORIGIN),
+    buyPrice: z.number().nonnegative().int().optional(),
+    salePrice: z.number().nonnegative().int().optional(),
+    absence: z.nativeEnum(ABSENCE).nullable(),
+    startReprodDate: z
+      .string()
+      .optional()
+      .refine(
+        validateDate,
+        "startReprodDate must be a valid date timestamp in milliseconds"
+      ),
+    characteristics: z.array(
+      z
+        .string()
+        .refine(
+          async (id) => await checkCharacteristicExistsById(id, true),
+          "characteristic does not exist"
+        )
+    ),
+    father: z
+      .string()
+      .optional()
+      .refine(validateCowExists, "Cow does not exist"),
+    mother: z
+      .string()
+      .optional()
+      .refine(validateCowExists, "Cow does not exist"),
+    children: z
+      .array(z.string().refine(validateCowExists, "Cow does not exist"))
+      .optional(),
+  })
+  .refine(
+    ({ mother, origin }) => validateMotherAndOrigin(mother, origin),
+    "Both parents must be passed if origin is 'born' and null if origin is 'bought'"
+  );
+
+export type UpdateCowSchema = z.infer<typeof updateCowSchema>;
+export const updateCowSchema = z.object({
+  weight: z.string().min(1).max(10).nullable().optional(),
+  buyPrice: z.number().nonnegative().int().nullable().optional(),
+  salePrice: z.number().nonnegative().int().nullable().optional(),
+  absence: z.nativeEnum(ABSENCE).nullable().optional(),
+  characteristics: z
+    .array(
+      z
+        .string()
+        .refine(
+          async (id) => await checkCharacteristicExistsById(id, true),
+          "characteristic does not exist"
+        )
+    )
     .optional(),
 });
-export type UpdateCowSchema = z.infer<typeof updateCowSchema>;
-export const updateCowSchema = createCowSchema.partial();
 
 // Breed Create/Update Schemas
 export type CreateBreedSchema = z.infer<typeof createBreedSchema>;
@@ -122,7 +156,7 @@ async function checkCharacteristicExistsByValue(
   return shouldExist ? characteristic !== null : characteristic === null;
 }
 
-function validateBirthDate(val: string) {
+function validateDate(val: string) {
   const ms = Number(val);
   return !isNaN(ms) && !isNaN(new Date(ms).getTime());
 }
@@ -134,4 +168,16 @@ async function validateCowExists(id: string) {
   }
   const cow = await CowModel.findById(id);
   return cow !== null;
+}
+
+function validateMotherAndOrigin(mother: string | undefined, origin: ORIGIN) {
+  const motherProvided = Boolean(mother) === true;
+
+  if (origin === ORIGIN.BORN) {
+    return motherProvided;
+  }
+  if (origin === ORIGIN.BOUGHT) {
+    return !motherProvided;
+  }
+  return false;
 }

@@ -5,8 +5,7 @@
   "type": "module",
   "module": "esnext",
   "scripts": {
-    "dev": "tsx watch server/server.ts",
-    "start": "tsx server/server.ts"
+    "dev": "netlify dev"
   },
   "keywords": [],
   "author": "",

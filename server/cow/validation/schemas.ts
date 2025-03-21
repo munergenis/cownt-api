@@ -38,14 +38,16 @@ export const createCowSchema = z
         validateDate,
         "startReprodDate must be a valid date timestamp in milliseconds"
       ),
-    characteristics: z.array(
-      z
-        .string()
-        .refine(
-          async (id) => await checkCharacteristicExistsById(id, true),
-          "characteristic does not exist"
-        )
-    ),
+    characteristics: z
+      .array(
+        z
+          .string()
+          .refine(
+            async (id) => await checkCharacteristicExistsById(id, true),
+            "characteristic does not exist"
+          )
+      )
+      .optional(),
     father: z
       .string()
       .optional()
@@ -170,6 +172,7 @@ async function validateCowExists(id: string) {
   return cow !== null;
 }
 
+// TODO: afegir valildació de dataNaix si origen es BORN
 function validateMotherAndOrigin(mother: string | undefined, origin: ORIGIN) {
   const motherProvided = Boolean(mother) === true;
 

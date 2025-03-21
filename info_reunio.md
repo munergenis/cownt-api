@@ -6,10 +6,10 @@
 - startReproductionDate to Today > X [opcional amb flag a front] (Incloure [animal] que fa menys de [X] mesos que té edat per reproduir-se) => no inclurà aquest filtre
 - (X month before today < births with dates < Today) === 0 (es a dir, amb 0 births entre X mesos abans i avui) -->
 
-Al crear una vaca, diferenciar entre vaca comprada i vaca nascuda!!!!
+Al crear una vaca, diferenciar entre vaca comprada i vaca nascuda!!!! a traves d'origen
 
 - Vaca comprada no te id de mare ni pare
-- Vaca nascuda es obligatori posar id mare i pare
+- Vaca nascuda es obligatori posar id mare i data naixament
 
 1Vaca:
 
@@ -19,12 +19,9 @@ Al crear una vaca, diferenciar entre vaca comprada i vaca nascuda!!!!
 - Vaca amb edat reproductiva i 0 parts:
   -- Novella des de X mesos
   -- No mitjana
-- Vaca amb edat reproductiva i 1 part:
+- Vaca amb edat reproductiva i 1+ parts:
   -- Ultim part fa X mesos
-  -- No mitjana
-- Vaca amb edat reproductiva i 2+ parts:
-  -- Ultim part fa X mesos
-  -- SI mitjana parts
+  -- Mitjana (lapse entre parts + lapse entre ultim part i avui [si aquest lapse supera la mitjana])
 
 Vaques:
 

@@ -30,8 +30,9 @@ export interface Cow extends Document {
   mother: Types.ObjectId | null;
   children: Types.ObjectId[];
 }
-export interface CowWithBirthAverage extends Cow {
+export interface CowWithStatistics extends Cow {
   birthAverage: number | null;
+  lastIntervalDays: number;
 }
 
 const cowSchema = new Schema<Cow>(

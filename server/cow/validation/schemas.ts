@@ -26,13 +26,6 @@ export const createCowSchema = z
     buyPrice: z.number().nonnegative().int().optional(),
     salePrice: z.number().nonnegative().int().optional(),
     absence: z.nativeEnum(ABSENCE).nullable(),
-    startReprodDate: z
-      .string()
-      .optional()
-      .refine(
-        (val) => val === undefined || validateDate(val),
-        'startReprodDate must be a valid date timestamp in milliseconds'
-      ),
     characteristics: z.array(z.string()).optional(),
     mother: z.string().optional(),
     children: z.array(z.string()).optional(),

@@ -1,5 +1,5 @@
-import { model, Schema, Document, Types } from "mongoose";
-import { ABSENCE, ORIGIN, SEX } from "../consts";
+import { ABSENCE, ORIGIN, SEX } from '../consts';
+import { Document, Schema, Types, model } from 'mongoose';
 
 // startReprodDate
 // birthAverage
@@ -25,21 +25,23 @@ export interface Cow extends Document {
 
   // stats
   startReprodDate: string | null;
-  birthAverage: string | null;
 
   // tags
   characteristics: Types.ObjectId[];
 
   // gen
-  father: Types.ObjectId | null;
   mother: Types.ObjectId | null;
   children: Types.ObjectId[];
 }
+export interface CowWithBirthAverage extends Cow {
+  birthAverage: number | null;
+}
+
 const cowSchema = new Schema<Cow>(
   {
     longCode: { type: String, required: true },
     shortCode: { type: String, required: true },
-    breed: { type: Schema.ObjectId, ref: "CowBreed", required: true },
+    breed: { type: Schema.ObjectId, ref: 'CowBreed', required: true },
     sex: { type: String, required: true },
     birthDate: { type: String, default: null },
     weight: { type: String, default: null },
@@ -48,11 +50,9 @@ const cowSchema = new Schema<Cow>(
     salePrice: { type: Number, default: null },
     absence: { type: String, default: null },
     startReprodDate: { type: String, default: null },
-    birthAverage: { type: String, default: null },
-    characteristics: [{ type: Schema.ObjectId, ref: "CowCharacteristic" }],
-    father: { type: Schema.ObjectId, ref: "Cow", default: null },
-    mother: { type: Schema.ObjectId, ref: "Cow", default: null },
-    children: [{ type: Schema.ObjectId, ref: "Cow" }],
+    characteristics: [{ type: Schema.ObjectId, ref: 'CowCharacteristic' }],
+    mother: { type: Schema.ObjectId, ref: 'Cow', default: null },
+    children: [{ type: Schema.ObjectId, ref: 'Cow' }],
   },
   {
     toJSON: {
@@ -65,7 +65,7 @@ const cowSchema = new Schema<Cow>(
     },
   }
 );
-const CowModel = model<Cow>("Cow", cowSchema);
+const CowModel = model<Cow>('Cow', cowSchema);
 
 export interface CowBreed extends Document {
   value: string;
@@ -85,7 +85,7 @@ const cowBreedSchema = new Schema<CowBreed>(
     },
   }
 );
-export const CowBreedModel = model<CowBreed>("CowBreed", cowBreedSchema);
+export const CowBreedModel = model<CowBreed>('CowBreed', cowBreedSchema);
 
 export interface CowCharacteristic extends Document {
   value: string;
@@ -106,7 +106,7 @@ const CowCharacteristicSchema = new Schema<CowCharacteristic>(
   }
 );
 export const CowCharacteristicModel = model<CowCharacteristic>(
-  "CowCharacteristic",
+  'CowCharacteristic',
   CowCharacteristicSchema
 );
 

@@ -17,10 +17,10 @@ Al crear una vaca, diferenciar entre vaca comprada i vaca nascuda!!!! a traves d
   -- Sense edat
   -- No mitjana
 - Vaca amb edat reproductiva i 0 parts:
-  -- Novella des de X mesos
+  -- Novella des de X mesos (today - startReprodDate)
   -- No mitjana
 - Vaca amb edat reproductiva i 1+ parts:
-  -- Ultim part fa X mesos
+  -- Ultim part fa X mesos (today - children[lastindex].birthDate)
   -- Mitjana (lapse entre parts + lapse entre ultim part i avui [si aquest lapse supera la mitjana])
 
 Vaques:

@@ -5,7 +5,8 @@
   "type": "module",
   "module": "esnext",
   "scripts": {
-    "dev": "netlify dev"
+    "dev": "netlify dev",
+    "seed:cows": "tsx server/scripts/seedCows.ts"
   },
   "keywords": [],
   "author": "",

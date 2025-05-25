@@ -21,8 +21,10 @@ router.delete(
   cowController.deleteCharacteristic
 );
 
+// cow with statistics routes
+router.get('/cows-with-statistics', cowController.getCowsWithStatistics);
+
 // cow routes
-router.get('/cows-with-birth-average', cowController.getCowsWithBirthAverage);
 router.get('/', cowController.getAllCows);
 router.get('/:cowId', cowController.getCowById);
 router.post('/', cowController.createCow);

@@ -14,7 +14,7 @@ interface CowWithChildren extends Omit<Cow, 'children'> {
   children: Cow[];
 }
 
-export async function getCowsWithBirthAverage(): Promise<{
+export async function getCowsWithStatistics(): Promise<{
   cows: Array<
     object & {
       birthAverageDays: number | null;

@@ -15,7 +15,7 @@ import {
   deleteCow,
   getAllCows,
   getCowById,
-  getCowsWithBirthAverage,
+  getCowsWithStatistics,
   updateCow,
 } from './cowMethods';
 
@@ -28,7 +28,7 @@ const controller = {
   updateCow,
 
   // Statistics methods
-  getCowsWithBirthAverage,
+  getCowsWithStatistics,
 
   // Breed methods
   getAllBreeds,

@@ -3,4 +3,4 @@ export * from './deleteCow';
 export * from './getAllCows';
 export * from './getCowById';
 export * from './updateCow';
-export * from './getCowsWithBirthAverage';
+export * from './getCowsWithStatistics';

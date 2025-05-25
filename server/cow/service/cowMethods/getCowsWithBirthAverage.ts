@@ -19,11 +19,12 @@ export async function getCowsWithBirthAverage(): Promise<{
   averageOfAverages: number | null;
 }> {
   // ---------------------------------------------------------------
-  // 1. Query: cows with at least one child and no absence flag
+  // 1. Query: female cows with at least one child and no absence flag
   // ---------------------------------------------------------------
   const cows = await CowModel.find({
     children: { $exists: true, $not: { $size: 0 } },
     absence: null,
+    sex: 'f',
   })
     .populate('children')
     .lean<CowWithChildren[]>();

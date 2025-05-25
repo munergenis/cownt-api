@@ -4,6 +4,8 @@ import {
   calculateOverallAverage,
 } from '../utils/helpers';
 
+import { transformLeanDoc } from '../utils/transform';
+
 type ExtendedCow = object & {
   birthAverageDays: number | null;
   lastIntervalDays: number;
@@ -14,7 +16,10 @@ interface CowWithChildren extends Omit<Cow, 'children'> {
 
 export async function getCowsWithBirthAverage(): Promise<{
   cows: Array<
-    object & { birthAverageDays: number | null; lastIntervalDays: number }
+    object & {
+      birthAverageDays: number | null;
+      lastIntervalDays: number;
+    }
   >;
   averageOfAverages: number | null;
 }> {
@@ -26,7 +31,7 @@ export async function getCowsWithBirthAverage(): Promise<{
     absence: null,
     sex: 'f',
   })
-    .populate('children')
+    .populate('children', 'birthDate')
     .lean<CowWithChildren[]>();
 
   const results: ExtendedCow[] = [];
@@ -35,9 +40,12 @@ export async function getCowsWithBirthAverage(): Promise<{
   // ---------------------------------------------------------------
   // 2. Iterate: apply calculation helpers per cow
   // ---------------------------------------------------------------
-  for (const cow of cows) {
+  for (const rawCow of cows) {
+    const cow = transformLeanDoc(rawCow);
+    const children = cow.children.map((child) => transformLeanDoc(child));
+
     // Extract and sort birth timestamps
-    const birthTimestamps = cow.children
+    const birthTimestamps = children
       .map((child) => Number(child.birthDate))
       .sort((a, b) => a - b);
 
@@ -48,6 +56,7 @@ export async function getCowsWithBirthAverage(): Promise<{
     // Collect enriched cow record
     results.push({
       ...cow,
+      children,
       birthAverageDays: overallAverageDays,
       lastIntervalDays,
     });

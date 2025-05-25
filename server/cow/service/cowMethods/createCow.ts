@@ -4,7 +4,7 @@ import {
   checkBreedExistsById,
   checkCharacteristicExistsById,
   checkCowExistsByLongCode,
-} from '../utils';
+} from '../utils/validations';
 
 import { CreateCowSchema } from '../../validation/schemas';
 import { CustomError } from '../../../errors/CustomError';

@@ -33,7 +33,6 @@ export async function deleteCow(cowId: string) {
       { children: cowId },
       { $pull: { children: cowId } }
     ).session(session);
-    // TODO: update birthAverage from mother (mothers?)
 
     await session.commitTransaction();
     await session.endSession();

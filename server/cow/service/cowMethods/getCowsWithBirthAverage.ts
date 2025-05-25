@@ -1,56 +1,66 @@
-import CowModel from '../../model';
+import CowModel, { Cow } from '../../model';
+import {
+  calculateBirthAverages,
+  calculateOverallAverage,
+} from '../utils/helpers';
 
-export const getCowsWithBirthAverage = async () => {
+type ExtendedCow = object & {
+  birthAverageDays: number | null;
+  lastIntervalDays: number;
+};
+interface CowWithChildren extends Omit<Cow, 'children'> {
+  children: Cow[];
+}
+
+export async function getCowsWithBirthAverage(): Promise<{
+  cows: Array<
+    object & { birthAverageDays: number | null; lastIntervalDays: number }
+  >;
+  averageOfAverages: number | null;
+}> {
+  // ---------------------------------------------------------------
+  // 1. Query: cows with at least one child and no absence flag
+  // ---------------------------------------------------------------
   const cows = await CowModel.find({
     children: { $exists: true, $not: { $size: 0 } },
     absence: null,
   })
     .populate('children')
-    .lean();
+    .lean<CowWithChildren[]>();
 
-  const cowsWithAvg = [];
+  const results: ExtendedCow[] = [];
+  const validAverages: number[] = [];
 
+  // ---------------------------------------------------------------
+  // 2. Iterate: apply calculation helpers per cow
+  // ---------------------------------------------------------------
   for (const cow of cows) {
-    // const children = await CowModel.find({
-    //   _id: { $in: cow.children },
-    // })
-    //   .select('birthDate')
-    //   .lean();
+    // Extract and sort birth timestamps
+    const birthTimestamps = cow.children
+      .map((child) => Number(child.birthDate))
+      .sort((a, b) => a - b);
 
-    const timeStamps = cow.children.map((ch) => Number(ch.birthDate));
-    if (timeStamps.length === 1) continue;
+    // Use pure function to get stats
+    const { overallAverageDays, lastIntervalDays } =
+      calculateBirthAverages(birthTimestamps);
 
-    let diffsSum = 0;
-    let avgCounts = 1;
-    let tempAvgMs = 0;
+    // Collect enriched cow record
+    results.push({
+      ...cow,
+      birthAverageDays: overallAverageDays,
+      lastIntervalDays,
+    });
 
-    const diffs: number[] = [];
-    for (let i = 1; i < timeStamps.length; i++) {
-      diffs.push(timeStamps[i] - timeStamps[i - 1]);
-      avgCounts++;
+    // Track non-null averages for final aggregate
+    if (overallAverageDays !== null) {
+      validAverages.push(overallAverageDays);
     }
-    diffsSum = diffs.reduce((acc, curr) => acc + curr, 0);
-    tempAvgMs = diffsSum / avgCounts;
-
-    const lastBirth = timeStamps[timeStamps.length - 1];
-    const lastInterval = Date.now() - lastBirth;
-
-    if (lastInterval > tempAvgMs) {
-      avgCounts++;
-      diffsSum += lastInterval;
-    }
-
-    const avgMs = diffsSum / avgCounts;
-    const avgDays = Math.round(avgMs / (1000 * 60 * 60 * 24));
-    cowsWithAvg.push({ ...cow, birthAverage: avgDays } as never);
   }
 
-  const averageOfAverages = Math.round(
-    cowsWithAvg.reduce(
-      (acc, { birthAverage }) => acc + birthAverage,
-      0 / cowsWithAvg.length
-    )
-  );
+  // ---------------------------------------------------------------
+  // 3. Compute final aggregate average across cows
+  // ---------------------------------------------------------------
+  const averageOfAverages = calculateOverallAverage(validAverages);
 
-  return { cows: cowsWithAvg, averageOfAverages };
-};
+  return { cows: results, averageOfAverages };
+}

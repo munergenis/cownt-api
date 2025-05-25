@@ -1,4 +1,4 @@
-import CowModel, { CowBreedModel, CowCharacteristicModel } from '../model';
+import CowModel, { CowBreedModel, CowCharacteristicModel } from '../../model';
 
 import { Types } from 'mongoose';
 

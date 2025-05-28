@@ -64,7 +64,6 @@ export async function createCow(cowData: CreateCowSchema) {
         { _id: newCow.mother },
         { $push: { children: createdCow._id } }
       ).session(session);
-      // TODO: update mother birthAverage
 
       await session.commitTransaction();
       await session.endSession();

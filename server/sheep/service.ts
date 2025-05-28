@@ -1,9 +1,9 @@
-import SheepModel, { Sheep } from "./model";
 import {
   CreateSheepSchema,
-  createSheepSchema,
   UpdateSheepSchema,
-} from "./validation/schemas";
+  createSheepSchema,
+} from './validation/schemas';
+import SheepModel, { Sheep } from './model';
 
 const service = {
   async getAllSheeps() {
@@ -17,13 +17,6 @@ const service = {
   },
 
   async createSheep(sheepData: CreateSheepSchema) {
-    // TODO: Validar que la vaca amb aquest codi no existeixi
-    // const sheepExists: Sheep | null = await SheepModel.findOne({
-    //   CODI_X_O_PROPIETAT: sheepData.CODI_X_O_PROPIETAT,
-    // });
-    // if (sheepExists) {
-    //   return null;
-    // }
     const newSheepDocument: Sheep = await SheepModel.create(sheepData);
     return newSheepDocument;
   },
@@ -40,7 +33,7 @@ const service = {
       sheepId,
       sheepData,
       {
-        returnDocument: "after",
+        returnDocument: 'after',
       }
     );
     return updatedSheep;

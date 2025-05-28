@@ -86,17 +86,3 @@ export type UpdateCharacteristicSchema = z.infer<
   typeof updateCharacteristicSchema
 >;
 export const updateCharacteristicSchema = createCharacteristicSchema.partial();
-
-// Refine validation functions
-// TODO: A FRONT!! afegir valildació de dataNaix si origen es BORN
-// function validateMotherAndOrigin(mother: string | undefined, origin: ORIGIN) {
-//   const motherProvided = Boolean(mother) === true;
-
-//   if (origin === ORIGIN.BORN) {
-//     return motherProvided;
-//   }
-//   if (origin === ORIGIN.BOUGHT) {
-//     return !motherProvided;
-//   }
-//   return false;
-// }

@@ -4,7 +4,7 @@ import mongoose, { Types } from 'mongoose';
 import CowModel from '../cow/model';
 import { connectDB } from '../db/config';
 
-async function seedCows() {
+async function seedBasicCows() {
   // Conectar a la base de datos
   await connectDB();
 
@@ -29,9 +29,6 @@ async function seedCows() {
   const cow6Id = new Types.ObjectId('60d5ec49f1d2f8b0e4c5a1f6');
 
   try {
-    // Limpiar colección
-    await CowModel.deleteMany({});
-
     // Datos de prueba con IDs reales
     const cowsData = [
       {
@@ -132,6 +129,9 @@ async function seedCows() {
       shortCode: cow.longCode.slice(-COW_SHORT_CODE_LAST_CHARS_NUM),
     }));
 
+    // Limpiar colección
+    await CowModel.deleteMany({});
+
     await CowModel.insertMany(cowsWithShort);
     console.log('🎉 Seed de cows completado con datos reales');
   } catch (error) {
@@ -141,4 +141,4 @@ async function seedCows() {
   }
 }
 
-seedCows();
+seedBasicCows();
